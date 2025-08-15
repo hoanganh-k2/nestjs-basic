@@ -1,31 +1,70 @@
+import { Type } from 'class-transformer';
 import {
   IsEmail,
+  IsInt,
   IsNotEmpty,
+  IsNotEmptyObject,
+  IsObject,
   IsOptional,
-  IsNumber,
-  MinLength,
+  ValidateNested,
 } from 'class-validator';
+import mongoose from 'mongoose';
 
-export class CreateUserDto {
-  @IsEmail()
+class Company {
   @IsNotEmpty()
-  email: string;
-
-  @IsNotEmpty()
-  @MinLength(6)
-  password: string;
+  _id: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty()
   name: string;
+}
 
-  @IsOptional()
-  address?: string;
+export class CreateUserDto {
+  @IsNotEmpty({ message: 'Name không được đế trống' })
+  name: string;
 
-  @IsOptional()
-  @IsNumber()
-  phone?: number;
+  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  @IsNotEmpty({ message: 'Email không được đế trống' })
+  email: string;
 
-  @IsOptional()
-  @IsNumber()
-  age?: number;
+  @IsNotEmpty({ message: 'Password không được đế trống' })
+  password: string;
+
+  @IsNotEmpty({ message: 'Age không được đế trống' })
+  age: number;
+
+  @IsNotEmpty({ message: 'Gender không được đế trống' })
+  gender: string;
+
+  @IsNotEmpty({ message: 'Address không được đế trống' })
+  address: string;
+
+  @IsNotEmpty({ message: 'Role không được đế trống' })
+  role: string;
+
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => Company)
+  company!: Company;
+}
+
+export class RegisterUserDto {
+  @IsNotEmpty({ message: 'Name không được đế trống' })
+  name: string;
+
+  @IsEmail({}, { message: 'Email không đúng định dạng' })
+  @IsNotEmpty({ message: 'Email không được đế trống' })
+  email: string;
+
+  @IsNotEmpty({ message: 'Password không được đế trống' })
+  password: string;
+
+  @IsNotEmpty({ message: 'Age không được đế trống' })
+  age: string;
+
+  @IsNotEmpty({ message: 'Gender không được đế trống' })
+  gender: string;
+
+  @IsNotEmpty({ message: 'Address không được đế trống' })
+  address: string;
 }
