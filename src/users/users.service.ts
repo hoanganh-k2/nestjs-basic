@@ -44,6 +44,7 @@ export class UsersService {
     });
     return user;
   }
+
   async create(createUserDto: CreateUserDto, user: IUser) {
     const hashPassword = this.hashPassword(createUserDto.password);
     const emailExists = await this.isExistEmail(createUserDto.email);
