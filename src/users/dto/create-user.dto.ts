@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsInt,
+  IsMongoId,
   IsNotEmpty,
   IsNotEmptyObject,
   IsObject,
@@ -38,8 +39,9 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Address không được đế trống' })
   address: string;
 
-  @IsNotEmpty({ message: 'Role không được đế trống' })
-  role: string;
+  @IsNotEmpty({ message: 'role không được để trống' })
+  @IsMongoId({ message: 'role có định dạng là objectId' })
+  role: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmptyObject()
   @IsObject()

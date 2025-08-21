@@ -107,12 +107,17 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid MongoDB ObjectId format');
     }
-    let user = await this.userModel.findOne({ _id: id }).select('-password');
+    let user = await this.userModel
+      .findOne({ _id: id })
+      .select('-password')
+      .populate({ path: 'role', select: { name: 1, _id: 1 } });
     return user;
   }
 
   findByUsername(username: string) {
-    return this.userModel.findOne({ email: username });
+    return this.userModel
+      .findOne({ email: username })
+      .populate({ path: 'role', select: { name: 1, permissions: 1 } });
   }
 
   async update(updateUserDto: UpdateUserDto, user: IUser) {
@@ -131,6 +136,12 @@ export class UsersService {
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid MongoDB ObjectId format');
+    }
+    const foundUser = await this.userModel.findById(id);
+    if (foundUser.email === 'admin@gmail.com') {
+      throw new BadRequestException(
+        `Không thể xoá tài khoản ${foundUser.email}`,
+      );
     }
     await this.userModel.updateOne(
       { _id: id },

@@ -110,6 +110,11 @@ export class RolesService {
     if (!mongoose.isValidObjectId(id)) {
       throw new BadRequestException('Id không hợp lệ');
     }
+
+    const foundRole = await this.roleModel.findById(id);
+    if (foundRole.name === 'ADMIN') {
+      throw new BadRequestException('không thể xoá role ADMIN');
+    }
     await this.roleModel.updateOne(
       { _id: id },
       {
