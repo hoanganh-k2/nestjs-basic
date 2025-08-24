@@ -17,3 +17,7 @@ export const User = createParamDecorator(
     return request.user;
   },
 );
+
+export const IS_PUBLIC_PERMISSION = 'isPublic';
+export const SkipCheckPermission = () =>
+  SetMetadata(IS_PUBLIC_PERMISSION, true);

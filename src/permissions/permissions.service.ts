@@ -17,10 +17,12 @@ export class PermissionsService {
 
   async create(createPermissionDto: CreatePermissionDto, user: IUser) {
     const { name, apiPath, method, module } = createPermissionDto;
-    const isExist = this.permissionModel.findOne({ apiPath, method });
+    const isExist = await this.permissionModel.findOne({ apiPath, method });
+
     if (isExist) {
       throw new BadRequestException('apiPath và method đã tồn tại');
     }
+
     let permission = await this.permissionModel.create({
       name,
       apiPath,
@@ -40,14 +42,14 @@ export class PermissionsService {
   }
 
   async findAll(currentPage: number, limit: number, qs: string) {
-    const { filter, sort, projection, population } = aqp(qs);
+    const { filter, projection, population } = aqp(qs);
 
     if (filter.current) delete filter.current;
-    if (filter.pageSize) delete filter.limit;
+    if (filter.pageSize) delete filter.pageSize;
 
-    if (sort) {
-      // @ts-ignore: Unreachable code error
-      sort = '-updatedAt';
+    let { sort } = aqp(qs);
+    if (!sort || Object.keys(sort).length === 0) {
+      sort = { updatedAt: -1 }; // Use object format for MongoDB sort
     }
 
     let offset = (+currentPage - 1) * +limit;
