@@ -126,9 +126,12 @@ export class UsersService {
       .populate({ path: 'role', select: { name: 1 } });
   }
 
-  async update(updateUserDto: UpdateUserDto, user: IUser) {
+  async update(_id: string, updateUserDto: UpdateUserDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      throw new BadRequestException('Invalid MongoDB ObjectId format');
+    }
     return await this.userModel.updateOne(
-      { _id: updateUserDto._id },
+      { _id },
       {
         ...updateUserDto,
         updatedBy: {
