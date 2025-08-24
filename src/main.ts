@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 require('dotenv').config();
 
 async function bootstrap() {
@@ -46,6 +47,29 @@ async function bootstrap() {
 
   //config helmet
   app.use(helmet());
+
+  //config swagger
+  const config = new DocumentBuilder()
+    .setTitle('NestJS APIs Document')
+    .setDescription('All Modules APIs')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'Bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      },
+      'token',
+    )
+    .addSecurityRequirements('token')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   const port = configService.get<string>('PORT');
   // await app.listen(process.env.PORT);
